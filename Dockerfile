@@ -1,4 +1,4 @@
-FROM node:23-alpine
+FROM node:23-alpine AS build
 
 WORKDIR /app
 
@@ -8,18 +8,14 @@ RUN npm install -g pnpm && pnpm install
 
 COPY . .
 
-RUN pnpm build
+RUN pnpm run build
+
+FROM node:23-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/.output ./.output
 
 EXPOSE 3000
 
 CMD ["node", ".output/server/index.mjs"]
-
-
-
-# COPY . .
-
-
-
-# EXPOSE 3000
-
-# CMD ["node", ".output"]
